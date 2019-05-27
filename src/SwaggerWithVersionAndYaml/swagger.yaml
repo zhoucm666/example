@@ -1,0 +1,109 @@
+swagger: "2.0"
+info:
+  version: 1.0
+  title: Sample API 1.0
+  description: <a href='/swagger/v1/swagger_v1.yaml'>/swagger/v1/swagger_v1.yaml</a>
+paths:
+  /v1/api/values:
+    get:
+      tags:
+      - Values
+      operationId: Get
+      consumes: []
+      produces:
+      - text/plain
+      - application/json
+      - text/json
+      parameters: []
+      responses:
+        200:
+          description: Success
+          schema:
+            uniqueItems: false
+            type: array
+            items:
+              type: string
+      deprecated: false
+    post:
+      tags:
+      - Values
+      operationId: Post
+      consumes:
+      - application/json-patch+json
+      - application/json
+      - text/json
+      - application/*+json
+      produces: []
+      parameters:
+      - name: value
+        in: body
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success
+      deprecated: false
+  /v1/api/values/{id}:
+    get:
+      tags:
+      - Values
+      operationId: Get
+      consumes: []
+      produces:
+      - text/plain
+      - application/json
+      - text/json
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: Success
+          schema:
+            type: string
+      deprecated: false
+    put:
+      tags:
+      - Values
+      operationId: Put
+      consumes:
+      - application/json-patch+json
+      - application/json
+      - text/json
+      - application/*+json
+      produces: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: integer
+        format: int32
+      - name: value
+        in: body
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success
+      deprecated: false
+    delete:
+      tags:
+      - Values
+      operationId: Delete
+      consumes: []
+      produces: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: integer
+        format: int32
+      responses:
+        200:
+          description: Success
+      deprecated: false
+definitions: {}
+
