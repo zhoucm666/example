@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSwaggerGen(options =>
             {
                 options.OperationFilter<SwaggerDefaultValues>();
-                options.DocumentFilter<YamlDocumentFilter>();
+                //options.DocumentFilter<YamlDocumentFilter>();
             });
             services.AddTransient<IStartupFilter, AutoRegisterSwagger>();
         }

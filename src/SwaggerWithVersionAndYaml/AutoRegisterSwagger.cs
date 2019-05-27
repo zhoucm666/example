@@ -16,12 +16,12 @@ namespace SwaggerWithVersionAndYaml
         {
             return app =>
             {
-                app.UseStaticFiles();
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    ServeUnknownFileTypes = true,
-                    DefaultContentType = "application/yaml"
-                });
+                //app.UseStaticFiles();
+                //app.UseStaticFiles(new StaticFileOptions
+                //{
+                //    ServeUnknownFileTypes = true,
+                //    DefaultContentType = "application/yaml"
+                //});
                 app.UseSwagger();
                 app.UseMiddleware<SwaggerYamlMiddleware>();
                 app.UseSwaggerUI(options =>
