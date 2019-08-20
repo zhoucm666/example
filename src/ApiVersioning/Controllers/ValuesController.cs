@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SwaggerWithVersionAndYaml.Controllers
-{   
-    [ApiVersion("2.0")]
-    [Route("v{version:apiVersion}/api/Values")]
+namespace ApiVersioning.Controllers
+{
+    [ApiVersion("1.0")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class ValuesV2Controller : ControllerBase
+    public class ValuesController : ControllerBase
     {
         // GET api/values
         [HttpGet]
@@ -25,6 +25,5 @@ namespace SwaggerWithVersionAndYaml.Controllers
             return "value";
         }
 
-        
     }
 }
