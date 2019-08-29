@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Interfaces;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Collections.Generic;
 
 namespace SwaggerWithVersionAndYaml
 {
@@ -16,13 +19,12 @@ namespace SwaggerWithVersionAndYaml
             {
                 options.SwaggerDoc(
                     description.GroupName,
-                    new Info()
+                    new OpenApiInfo()
                     {
                         Title = $"Sample API {description.ApiVersion}",
-                        Version = description.ApiVersion.ToString(),
-                        Description = string.Format("<a href='/swagger/{0}/swagger_{0}.yaml'>/swagger/{0}/swagger_{0}.yaml</a>", description.GroupName)
-                    }
-                    );
+                        Version = description.ApiVersion.ToString(),                        
+                        Description = string.Format("<a href='/openapi/{0}/swagger_oas2_{0}.yaml'>swagger_oas2_{0}.yaml</a><br/><a href='/openapi/{0}/swagger_oas3_{0}.yaml'>swagger_oas3_{0}.yaml</a>", description.GroupName)
+                    });
             }
 
 

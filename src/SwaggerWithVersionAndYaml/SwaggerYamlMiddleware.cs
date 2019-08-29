@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
+using Microsoft.OpenApi;
+using Microsoft.OpenApi.Extensions;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace SwaggerWithVersionAndYaml
 {
@@ -16,7 +17,7 @@ namespace SwaggerWithVersionAndYaml
     {
         private readonly RequestDelegate _next;
         private readonly TemplateMatcher _templateMatcher;
-        private const string YamlRouteTemplate = "swagger/{documentName}/swagger_{version}.yaml";
+        private const string YamlRouteTemplate = "openapi/{documentName}/swagger_oas{v}_{version}.yaml";
 
         public SwaggerYamlMiddleware(RequestDelegate next)
         {
@@ -24,7 +25,7 @@ namespace SwaggerWithVersionAndYaml
             _templateMatcher = new TemplateMatcher(TemplateParser.Parse(YamlRouteTemplate), new RouteValueDictionary());
         }
 
-        public async Task Invoke(HttpContext httpContext,ISwaggerProvider swaggerProvider)
+        public async Task Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
         {
             if (!RequestingSwaggerDocument(httpContext.Request, out string documentName))
             {
@@ -37,27 +38,18 @@ namespace SwaggerWithVersionAndYaml
                 : httpContext.Request.PathBase.ToString();
 
             var swagger = swaggerProvider.GetSwagger(documentName, null, basePath);
-
-            await RespondWithSwaggerYaml(httpContext.Response, swagger);
+            var isOasv2 = httpContext.Request.Path.Value.Contains("oas2");
+            await RespondWithSwaggerYaml(httpContext.Response, swagger,isOasv2);
         }
 
-        private async Task RespondWithSwaggerYaml(HttpResponse response, SwaggerDocument swagger)
+        private async Task RespondWithSwaggerYaml(HttpResponse response, OpenApiDocument swagger,bool isOas2)
         {
             response.StatusCode = 200;
             response.ContentType = "application/yaml;charset=utf-8";
-            var builder = new SerializerBuilder();
-            builder.WithNamingConvention(new CamelCaseNamingConvention());
-            builder.WithTypeInspector(innerInspector => new PropertiesIgnoreTypeInspector(innerInspector));
-            var serializer = builder.Build();
-            StringBuilder yamlBuilder = new StringBuilder();
-            using (var textWriter = new StringWriter(yamlBuilder))
-            {
-                serializer.Serialize(textWriter, swagger);
-                var result = yamlBuilder.ToString();
-                result = result.Replace("swagger: 2.0", "swagger: \"2.0\"", StringComparison.OrdinalIgnoreCase);
-                result = Regex.Replace(result, "\bref:", "$ref:");
-                await response.WriteAsync(result, new UTF8Encoding(false));
-            }
+
+            var result = isOas2? swagger.Serialize(OpenApiSpecVersion.OpenApi2_0, OpenApiFormat.Yaml): swagger.Serialize(OpenApiSpecVersion.OpenApi3_0, OpenApiFormat.Yaml);
+            await response.WriteAsync(result, new UTF8Encoding(false));
+
         }
 
         private bool RequestingSwaggerDocument(HttpRequest request, out string documentName)
